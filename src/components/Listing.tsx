@@ -6,6 +6,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
+  LogBox,
 } from 'react-native';
 import _ from 'lodash';
 import {Avatar} from 'react-native-elements';
@@ -17,6 +18,7 @@ import {filter as filterAtom} from '../atom';
 import listingQuery from '../graphQL/listingQuery.js';
 
 const Listing = () => {
+  LogBox.ignoreAllLogs();
   const filter = useRecoilValue(filterAtom);
 
   const {loading, error, data, fetchMore} = useQuery(listingQuery, {
@@ -76,8 +78,9 @@ const Listing = () => {
           ItemSeparatorComponent={renderSeparator}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
-            const offset = Number(data.characters.info.next) + 1;
             if (data.characters.info.next !== null) {
+              const offset = Number(data.characters.info.next) + 1;
+
               return fetchMore({
                 variables: {
                   page: offset,
