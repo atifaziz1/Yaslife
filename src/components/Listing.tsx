@@ -7,6 +7,7 @@ import {
   StyleSheet,
   FlatList,
 } from 'react-native';
+import _ from 'lodash';
 import {Avatar} from 'react-native-elements';
 import {useRecoilValue} from 'recoil';
 import {useNavigation} from '@react-navigation/native';
@@ -75,8 +76,7 @@ const Listing = () => {
           ItemSeparatorComponent={renderSeparator}
           onEndReachedThreshold={0.5}
           onEndReached={() => {
-            const offset =
-              Number(JSON.stringify(data.characters.info.next)) + 1;
+            const offset = Number(data.characters.info.next) + 1;
             if (data.characters.info.next !== null) {
               return fetchMore({
                 variables: {
@@ -86,14 +86,17 @@ const Listing = () => {
                   if (!fetchMoreResult) {
                     return prev;
                   }
-                  const obj = Object.assign({}, prev, {
-                    data: {
-                      ...prev.characters.results,
-                      ...fetchMoreResult.characters.results,
+                  return {
+                    characters: {
+                      info: fetchMoreResult.characters.info,
+                      results: _.concat(
+                        prev.characters.results,
+                        fetchMoreResult.characters.results,
+                      ),
+                      __typename: fetchMoreResult.characters.__typename,
                     },
-                  });
-
-                  return obj;
+                    character: fetchMoreResult.character,
+                  };
                 },
               });
             }
